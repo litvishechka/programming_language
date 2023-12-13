@@ -19,6 +19,7 @@ class Lexer():
         self.lexer.add('DIV', r'/')
         # Числа
         self.lexer.add('NUMBER', r'\d+')
+        self.lexer.add('FLOAT_NUMBER', r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?')
         # Игнорируем пробелы
         self.lexer.ignore('\s+')
  

@@ -1,5 +1,5 @@
-from lexer import Lexer
-from parser1 import Parser
+from mylexer import Lexer
+from myparser import Parser
 
 #text_input = """
 #вывести(4 + 4 - 2);
