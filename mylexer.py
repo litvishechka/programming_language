@@ -5,6 +5,9 @@ class Lexer():
         self.lexer = LexerGenerator()
 
     def _add_tokens(self):
+        # Числа
+        self.lexer.add('FLOAT_NUMBER', r'[+-]?[0-9]+\.[0-9]+')
+        self.lexer.add('NUMBER', r'\d+')
         # Print
         self.lexer.add('PRINT', r'вывести')
         # Скобки
@@ -17,9 +20,6 @@ class Lexer():
         self.lexer.add('SUB', r'\-')
         self.lexer.add('MUL', r'\*')
         self.lexer.add('DIV', r'/')
-        # Числа
-        self.lexer.add('NUMBER', r'\d+')
-        self.lexer.add('FLOAT_NUMBER', r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?')
         # Игнорируем пробелы
         self.lexer.ignore('\s+')
  

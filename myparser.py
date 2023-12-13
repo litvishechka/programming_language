@@ -11,10 +11,10 @@ class Parser():
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV'],
 
             precedence=[
-            ('left',['NUMBER']),
+            #('left',['NUMBER']),
             ('left', ['PLUS', 'MINUS']),
             ('left', ['MUL', 'DIV']),
-            ('left',['FLOAT_NUMBER']),
+            #('left',['FLOAT_NUMBER']),
             ]
         )
 
