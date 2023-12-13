@@ -1,1 +1,1 @@
-<ast1.Number object at 0x000001D89781AC90>[Token('PRINT', 'вывести'), Token('OPEN_PAREN', '('), <ast1.Sum object at 0x000001D89781B510>, Token('CLOSE_PAREN', ')'), Token('SEMI_COLON', ';')]
+[Token('PRINT', 'вывести'), Token('OPEN_PAREN', '('), <ast1.Div object at 0x000002356E4C12D0>, Token('CLOSE_PAREN', ')'), Token('SEMI_COLON', ';')]

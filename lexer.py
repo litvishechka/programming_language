@@ -15,6 +15,8 @@ class Lexer():
         # Операторы
         self.lexer.add('SUM', r'\+')
         self.lexer.add('SUB', r'\-')
+        self.lexer.add('MUL', r'\*')
+        self.lexer.add('DIV', r'/')
         # Числа
         self.lexer.add('NUMBER', r'\d+')
         # Игнорируем пробелы
