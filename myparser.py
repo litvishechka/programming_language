@@ -1,5 +1,5 @@
 from rply import ParserGenerator
-from ast import Number, Sum, Sub, Print, Mul, Div, FloatNumber, IntNumber
+from myast import Number, Sum, Sub, Print, Mul, Div, FloatNumber, IntNumber
 
 
 f = open("output.rch", "w")
@@ -20,9 +20,14 @@ class Parser():
 
 
     def parse(self):
-        @self.pg.production('program : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
+        @self.pg.production('program : statement')
         def program(p):
             f.write(str(p))
+            return p[0]
+        
+            
+        @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
+        def statement(p):
             return Print(p[2])
 
         @self.pg.production('expression : expression SUM expression')
@@ -47,7 +52,6 @@ class Parser():
         @self.pg.production('expression : FLOAT_NUMBER')
         def number(p):
             num = p[0]
-            print(num)
             if num.gettokentype() == 'NUMBER':
                 return IntNumber(p[0].value)
             elif num.gettokentype() == 'FLOAT_NUMBER':

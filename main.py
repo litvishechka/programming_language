@@ -10,9 +10,14 @@ with open(fname) as f:
     print(text_input)
 
 lexer = Lexer().get_lexer()
-tokens = lexer.lex(text_input)
+for token in text_input.split('\n'):
+    tokens = lexer.lex(token)
+    pg = Parser()
+    pg.parse()
+    parser = pg.get_parser()
+    parser.parse(tokens).eval()
 
-pg = Parser()
+'''pg = Parser()
 pg.parse()
 parser = pg.get_parser()
-parser.parse(tokens).eval()
+parser.parse(tokens).eval()'''
