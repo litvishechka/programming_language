@@ -11,6 +11,7 @@ class Lexer():
         self.lexer.add('FLOAT_NUMBER', r'[+-]?[0-9]+\.[0-9]+')
         self.lexer.add('NUMBER', r'\d+')
         #Тип числа
+        self.lexer.add('FLOAT',  r'вещественное')
         self.lexer.add('UNSIGNED_INTEGER',  r'целое')
         #Идентификатор
         #self.lexer.add('IDENTIFIER',r'\w*[a-zA-Zа-яА-ЯёЁ]+\w*')

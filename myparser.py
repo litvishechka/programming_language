@@ -9,11 +9,11 @@ class Parser():
         self.pg = ParserGenerator(
             # Список всех токенов, принятых парсером.
             ['NUMBER', 'FLOAT_NUMBER', 'PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
-             'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER', 'UNSIGNED_INTEGER'],
+             'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER', 'UNSIGNED_INTEGER','FLOAT'],
 
             precedence=[
             #('left',['NUMBER']),
-            ('left', ['UNSIGNED_INTEGER',]), 
+            ('left', ['UNSIGNED_INTEGER', 'FLOAT']), 
             ('left', ['=']), 
             ('left', ['PLUS', 'MINUS']),
             ('left', ['MUL', 'DIV']),
@@ -35,11 +35,14 @@ class Parser():
         
         @self.pg.production('statement : UNSIGNED_INTEGER IDENTIFIER EQUALLY NUMBER SEMI_COLON')
         def number(p):
-            variables_dict[p[1].value] = p[3].value
-            #print(variables_dict)
-            print(p[3].value)
+            variables_dict[p[1].value] = IntNumber(p[3].value)
             return IntNumber(p[3].value)
         
+        @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY FLOAT_NUMBER SEMI_COLON')
+        def number(p):
+            variables_dict[p[1].value] = FloatNumber(p[3].value)
+            return FloatNumber(p[3].value)
+    
 
         @self.pg.production('expression : expression SUM expression')
         @self.pg.production('expression : expression SUB expression')
@@ -65,6 +68,7 @@ class Parser():
         @self.pg.production('expression : IDENTIFIER')
         def number(p):
             num = p[0]
+            # print(num)
             if num.gettokentype() == 'NUMBER':
                 return IntNumber(p[0].value)
             elif num.gettokentype() == 'FLOAT_NUMBER':
