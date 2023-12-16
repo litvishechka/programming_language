@@ -38,6 +38,10 @@ class Mul(BinaryOp):
 class Div(BinaryOp):
     def eval(self):
         return self.left.eval() / self.right.eval()
+    
+class Less(BinaryOp):
+    def eval(self):
+        return self.left.eval() < self.right.eval()
 
 
 class Print():
