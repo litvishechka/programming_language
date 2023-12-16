@@ -38,10 +38,36 @@ class Mul(BinaryOp):
 class Div(BinaryOp):
     def eval(self):
         return self.left.eval() / self.right.eval()
-    
+
+
 class Less(BinaryOp):
     def eval(self):
         return self.left.eval() < self.right.eval()
+
+
+class More(BinaryOp):
+    def eval(self):
+        return self.left.eval() > self.right.eval()
+
+
+class EquallyEqually(BinaryOp):
+    def eval(self):
+        return self.left.eval() == self.right.eval()
+
+
+class NotEqually(BinaryOp):
+    def eval(self):
+        return self.left.eval() == self.right.eval()
+
+
+class MoreEquall(BinaryOp):
+    def eval(self):
+        return self.left.eval() >= self.right.eval()
+
+
+class LessEquall(BinaryOp):
+    def eval(self):
+        return self.left.eval() <= self.right.eval()
 
 
 class Print():
