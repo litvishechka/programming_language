@@ -26,6 +26,9 @@ class Sum(BinaryOp):
 
 
 class Sub(BinaryOp):
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " - " + self.right.get_string_interpretation()
+
     def eval(self):
         return self.left.eval() - self.right.eval()
 
@@ -74,5 +77,37 @@ class Print():
     def __init__(self, value):
         self.value = value
 
+    def get_string_interpretation(self) -> str:
+        return "print(" + self.value.get_string_interpretation() + ")"
+
     def eval(self):
         print(self.value.eval())
+
+class IfStatement():
+    def __init__(self, condition, true_statement) -> None:
+        self.condition = condition
+        self.true_statement = true_statement
+
+    def eval(self):
+        if self.condition:
+            return self.true_statement.eval()
+
+
+class Statements():
+    def __init__(self, statements) -> None:
+        self.statements = statements
+
+    def add_statement(self, value):
+        '''
+        Эта функция добавляет новый statement в statements.
+        Она просто изменяет внутреннее состояние объекта, но не возвращает его.
+        '''
+        self.statements.append(value)
+
+    def get_string_interpretation(self):
+        pass
+
+    def eval(self):
+        print(f"  Evauate all statements: {self.statements}")
+        for statement in self.statements:
+            statement.eval()

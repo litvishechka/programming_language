@@ -5,6 +5,7 @@ from myast import *
 f = open("output.rch", "w")
 variables_dict = {}
 if_list = []
+list_tokens = []
 
 
 class Parser():
@@ -15,7 +16,7 @@ class Parser():
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER',
              'UNSIGNED_INTEGER', 'FLOAT', 'EQUALLY_EQUALLY', 'NOT_EQUAL', 'MORE_EQUAL',
              'LESS_EQUAL', 'MORE', 'LESS', 'OPEN_CURLY_STAPLE', 'CLOSE_CURLY_STAPLE',
-             'BOOLEAN', 'IF'],
+             'IF'],
 
             precedence=[
                 # ('left',['NUMBER']),
@@ -30,11 +31,20 @@ class Parser():
             ]
         )
 
-    def parse(self):
-        @self.pg.production('program : statement')
-        def program(p):
-            f.write(str(p))
-            return p[0]
+    def create_productions(self):
+        @self.pg.production('program : ')
+        def empty_program(p) -> Statements:
+            return Statements([])
+
+        @self.pg.production('program : program statement')
+        def non_empty_program(p) -> Statements:
+            print(f" -- We inside of parser: {p}")
+            print(f"      len of p: {len(p)}")
+            # f.write(str(p))
+            statements: Statements = p[0]
+            statement = p[1]
+            statements.add_statement(statement)
+            return statements
 
         @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
         def statement(p):
@@ -45,57 +55,40 @@ class Parser():
             variables_dict[p[1].value] = IntNumber(p[3].value)
             return IntNumber(p[3].value)
 
-        @self.pg.production('statement : IF expression SEMI_COLON')
-        def expression(p):
-            return p[1]
+        @self.pg.production('statement : IF OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE statement CLOSE_CURLY_STAPLE SEMI_COLON')
+        def if_statement(p):
+            condition = p[2]
+            true_statement = p[5]
 
-        @self.pg.production('expression : OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE expression CLOSE_CURLY_STAPLE')
-        def bool_expression(p):
-            return p[4]
-
-        @self.pg.production('bool_expression : IDENTIFIER LESS NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER MORE NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER EQUALLY_EQUALLY NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER NOT_EQUAL NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER MORE_EQUAL NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER LESS_EQUAL NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER LESS FLOAT_NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER MORE FLOAT_NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER EQUALLY_EQUALLY FLOAT_NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER NOT_EQUAL FLOAT_NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER MORE_EQUAL FLOAT_NUMBER')
-        @self.pg.production('bool_expression : IDENTIFIER LESS_EQUAL FLOAT_NUMBER')
-        def bool_expression(p):
-            left = variables_dict.get(p[0].value)
-            operator = p[1]
-            if p[2].gettokentype() == 'NUMBER':
-                right = IntNumber(p[2].value)
-            elif p[2].gettokentype() == 'FLOAT_NUMBER':
-                right = FloatNumber(p[2].value)
-            if operator.gettokentype() == 'LESS':
-                if_list.append(Less(left, right).eval())
-            elif operator.gettokentype() == 'MORE':
-                if_list.append(More(left, right).eval())
-            elif operator.gettokentype() == 'EQUALLY_EQUALLY':
-                if_list.append(EquallyEqually(left, right).eval())
-            elif operator.gettokentype() == 'NOT_EQUAL':
-                if_list.append(NotEqually(left, right).eval())
-            elif operator.gettokentype() == 'MORE_EQUAL':
-                if_list.append(MoreEquall(left, right).eval())
-            elif operator.gettokentype() == 'LESS_EQUAL':
-                if_list.append(LessEquall(left, right).eval())
-            return if_list
-
-        @self.pg.production('expression : PRINT OPEN_PAREN expression CLOSE_PAREN')
-        def expression(p):
-            if if_list[0] == True:
-                if_list.pop(0)
-                return Print(p[2])
+            return IfStatement(condition, true_statement)
 
         @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY FLOAT_NUMBER SEMI_COLON')
         def number(p):
             variables_dict[p[1].value] = FloatNumber(p[3].value)
             return FloatNumber(p[3].value)
+
+        @self.pg.production('bool_expression : expression LESS expression')
+        @self.pg.production('bool_expression : expression MORE expression')
+        @self.pg.production('bool_expression : expression EQUALLY_EQUALLY expression')
+        @self.pg.production('bool_expression : expression NOT_EQUAL expression')
+        @self.pg.production('bool_expression : expression MORE_EQUAL expression')
+        @self.pg.production('bool_expression : expression LESS_EQUAL expression')
+        def condition(p):
+            left = p[0]
+            right = p[2]
+            logical_operator = p[1]
+            if logical_operator.gettokentype() == 'LESS':
+                return Less(left, right)
+            elif logical_operator.gettokentype() == 'MORE':
+                return More(left, right)
+            elif logical_operator.gettokentype() == 'EQUALLY_EQUALLY':
+                return EquallyEqually(left, right)
+            elif logical_operator.gettokentype() == 'NOT_EQUAL':
+                return NotEqually(left, right)
+            elif logical_operator.gettokentype() == 'MORE_EQUAL':
+                return MoreEquall(left, right)
+            elif logical_operator.gettokentype() == 'LESS_EQUAL':
+                return LessEquall(left, right)
 
         @self.pg.production('expression : expression SUM expression')
         @self.pg.production('expression : expression SUB expression')
@@ -120,7 +113,6 @@ class Parser():
         @self.pg.production('expression : IDENTIFIER')
         def number(p):
             num = p[0]
-            # print(num)
             if num.gettokentype() == 'NUMBER':
                 return IntNumber(p[0].value)
             elif num.gettokentype() == 'FLOAT_NUMBER':

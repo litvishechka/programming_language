@@ -1,23 +1,18 @@
 from mylexer import Lexer
 from myparser import Parser
 
-#text_input = """
-#вывести(4 + 4 - 2);
-#"""
 fname = "input.rch"
 with open(fname) as f:
     text_input = f.read()
-    print(text_input)
+    print(f"Input of file {fname}:\n{text_input}\n")
 
 lexer = Lexer().get_lexer()
-for token in text_input.split('\n'):
-    tokens = lexer.lex(token)
-    pg = Parser()
-    pg.parse()
-    parser = pg.get_parser()
-    parser.parse(tokens).eval()
-
-'''pg = Parser()
-pg.parse()
+tokens = lexer.lex(text_input)
+pg = Parser()
+pg.create_productions()
 parser = pg.get_parser()
-parser.parse(tokens).eval()'''
+res = parser.parse(tokens)
+print(f"Result of parser.parse = {res}")
+# first_statement_interpretation = res.statements[0].get_string_interpretation()
+# print(f"First statement string interpretation: {first_statement_interpretation}")
+res.eval()

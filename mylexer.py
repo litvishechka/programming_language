@@ -1,24 +1,21 @@
 from rply import LexerGenerator
 
+
 class Lexer():
     def __init__(self):
         self.lexer = LexerGenerator()
 
     def _add_tokens(self):
-        #Тип числа
-        #self.lexer.add('UNSIGNED_INTEGER',  r'целое')
         # Числа
         self.lexer.add('FLOAT_NUMBER', r'[+-]?[0-9]+\.[0-9]+')
         self.lexer.add('NUMBER', r'\d+')
-        #булевые переменные
-        self.lexer.add('BOOLEAN', r'true(?!\w)|false(?!\w)')
-        #условие
+        # булевые переменные
+        # self.lexer.add('BOOLEAN', r'true(?!\w)|false(?!\w)')
+        # условие
         self.lexer.add('IF', r'если')
-        #Тип числа
+        # Тип числа
         self.lexer.add('FLOAT',  r'вещественное')
         self.lexer.add('UNSIGNED_INTEGER',  r'целое')
-        #Идентификатор
-        #self.lexer.add('IDENTIFIER',r'\w*[a-zA-Zа-яА-ЯёЁ]+\w*')
         # Print
         self.lexer.add('PRINT', r'вывести')
         # Скобки
@@ -41,11 +38,12 @@ class Lexer():
         self.lexer.add('EQUALLY', r'=')
         self.lexer.add('OPEN_CURLY_STAPLE', r'{')
         self.lexer.add('CLOSE_CURLY_STAPLE', r'}')
-        #Идентификатор
-        self.lexer.add('IDENTIFIER',r'\w*[a-zA-Zа-яА-ЯёЁ]+\w*')
+        # Идентификатор
+        self.lexer.add('IDENTIFIER', r'\w*[a-zA-Zа-яА-ЯёЁ]+\w*')
         # Игнорируем пробелы
         self.lexer.ignore('\s+')
- 
+        self.lexer.ignore('\n+')
+
     def get_lexer(self):
         self._add_tokens()
         return self.lexer.build()
