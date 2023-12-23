@@ -114,9 +114,12 @@ class Print():
         print(self.value.run())
 
 
-class IfStatement():
+class IfStatement():    
     def get_string_interpretation(self) -> str:
-        return "if (" + self.condition.get_string_interpretation() + "):\n\t" + str(self.true_statement.get_string_interpretation())
+        condition = f"if ({self.condition.get_string_interpretation()}):\n\t"
+        if_true = self.true_statement.get_string_interpretation().split('\n')
+        if_true = "\n\t".join(if_true)
+        return condition + if_true
 
     def __init__(self, condition, true_statement) -> None:
         self.condition = condition
@@ -127,7 +130,7 @@ class IfStatement():
             return self.true_statement.run()
 
 
-class Program():
+class CodeBlock():
     def __init__(self, statements) -> None:
         self.statements = statements
 
@@ -143,10 +146,8 @@ class Program():
         for statement in self.statements:
             list_statements.append(statement.get_string_interpretation())
         return '\n'.join(list_statements)
-            # print(statement.get_string_interpretation())
 
     def run(self):
-        # print(f"  Evauate all statements: {self.statements}")
         for statement in self.statements:
             statement.run()
 
@@ -169,3 +170,14 @@ class InitializingIdentifier(Identifier):
 class UsingIdentifier(Identifier):
     def get_string_interpretation(self) -> str:
         return self.name
+    
+
+class Program():
+    def __init__(self, code_block) -> None:
+        self.code_block = code_block  
+
+    def run(self):
+        return self.code_block.run() 
+    
+    def get_string_interpretation(self):
+        return self.code_block.get_string_interpretation()

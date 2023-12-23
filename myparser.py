@@ -31,18 +31,20 @@ class Parser():
         )
 
     def create_productions(self):
-        @self.pg.production('program : ')
-        def empty_program(p) -> Program:
-            return Program([])
+        @self.pg.production('program : code_block')
+        def program(p) -> Program:
+            return Program(p[0])
 
-        # @self.pg.production('program : program statement')
-        @self.pg.production('program : program statement')
-        def non_empty_program(p) -> Program:
+        @self.pg.production('code_block : ')
+        def empty_code_block(p) -> CodeBlock:
+            return CodeBlock([])
+
+        @self.pg.production('code_block : code_block statement')
+        def non_empty_code_block(p) -> CodeBlock:
             # print(f" -- We inside of parser: {p}")
             # print(f"      len of p: {len(p)}")
             # print(f"      len of statements: {len(p[0].statements)}")
-            # f.write(str(p))
-            statements: Program = p[0]
+            statements: CodeBlock = p[0]
             statement = p[1]
             statements.add_statement(statement)
             return statements
@@ -53,10 +55,11 @@ class Parser():
 
         @self.pg.production('statement : UNSIGNED_INTEGER IDENTIFIER EQUALLY NUMBER SEMI_COLON')
         def number(p):
-            variables_dict[p[1].value] = UsingIdentifier(p[0].value, p[1].value, IntNumber(p[3].value))
+            variables_dict[p[1].value] = UsingIdentifier(
+                p[0].value, p[1].value, IntNumber(p[3].value))
             return InitializingIdentifier(p[0].value, p[1].value, IntNumber(p[3].value))
 
-        @self.pg.production('statement : IF OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE statement CLOSE_CURLY_STAPLE SEMI_COLON')
+        @self.pg.production('statement : IF OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE code_block CLOSE_CURLY_STAPLE SEMI_COLON')
         def if_statement(p):
             condition = p[2]
             true_statement = p[5]
@@ -64,7 +67,8 @@ class Parser():
 
         @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY FLOAT_NUMBER SEMI_COLON')
         def number(p):
-            variables_dict[p[1].value] = UsingIdentifier(p[0].value, p[1].value, FloatNumber(p[3].value))
+            variables_dict[p[1].value] = UsingIdentifier(
+                p[0].value, p[1].value, FloatNumber(p[3].value))
             return InitializingIdentifier(p[0].value, p[1].value, FloatNumber(p[3].value))
 
         @self.pg.production('bool_expression : expression LESS expression')
