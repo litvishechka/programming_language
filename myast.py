@@ -139,7 +139,11 @@ class Program():
         self.statements.append(value)
 
     def get_string_interpretation(self):
-        pass
+        list_statements = []
+        for statement in self.statements:
+            list_statements.append(statement.get_string_interpretation())
+        return '\n'.join(list_statements)
+            # print(statement.get_string_interpretation())
 
     def run(self):
         # print(f"  Evauate all statements: {self.statements}")
@@ -153,8 +157,15 @@ class Identifier():
         self.name = name
         self.value = value
 
-    def get_string_interpretation(self) -> str:
-        return self.type + ' ' + self.name + ' = ' + str(self.value.run())
-
     def run(self):
         return self.value.run()
+    
+
+class InitializingIdentifier(Identifier):
+    def get_string_interpretation(self) -> str:
+        return self.name + ' = ' + self.value.get_string_interpretation()
+
+
+class UsingIdentifier(Identifier):
+    def get_string_interpretation(self) -> str:
+        return self.name
