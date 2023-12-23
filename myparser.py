@@ -49,27 +49,22 @@ class Parser():
 
         @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
         def statement(p):
-            # print(Print(p[2]).get_string_interpretation())
             return Print(p[2])
 
         @self.pg.production('statement : UNSIGNED_INTEGER IDENTIFIER EQUALLY NUMBER SEMI_COLON')
         def number(p):
             variables_dict[p[1].value] = UsingIdentifier(p[0].value, p[1].value, IntNumber(p[3].value))
-            print(f" get_string_interpretation for the InitializingIdentifier for int:\n {InitializingIdentifier(p[0].value, p[1].value, IntNumber(p[3].value)).get_string_interpretation()}")
-            # InitializingIdentifier(p[0].value, p[1], IntNumber(p[3].value)).get_string_interpretation()
             return InitializingIdentifier(p[0].value, p[1].value, IntNumber(p[3].value))
 
         @self.pg.production('statement : IF OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE statement CLOSE_CURLY_STAPLE SEMI_COLON')
         def if_statement(p):
             condition = p[2]
             true_statement = p[5]
-            # print(f" get_string_interpretation for the IfStatement:\n {IfStatement(p[2], p[5]).get_string_interpretation()}")
             return IfStatement(condition, true_statement)
 
         @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY FLOAT_NUMBER SEMI_COLON')
         def number(p):
             variables_dict[p[1].value] = UsingIdentifier(p[0].value, p[1].value, FloatNumber(p[3].value))
-            # print(f" get_string_interpretation for the InitializingIdentifier for real:\n {InitializingIdentifier(p[0].value, p[1], FloatNumber(p[3].value)).get_string_interpretation()}")
             return InitializingIdentifier(p[0].value, p[1].value, FloatNumber(p[3].value))
 
         @self.pg.production('bool_expression : expression LESS expression')
