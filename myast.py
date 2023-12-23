@@ -1,15 +1,18 @@
 class Number():
+    def get_string_interpretation(self) -> str:
+        return str(self.value)
+
     def __init__(self, value):
         self.value = value
 
 
 class IntNumber(Number):
-    def eval(self):
+    def run(self):
         return int(self.value)
 
 
 class FloatNumber(Number):
-    def eval(self):
+    def run(self):
         return float(self.value)
 
 
@@ -21,56 +24,83 @@ class BinaryOp():
 
 
 class Sum(BinaryOp):
-    def eval(self):
-        return self.left.eval() + self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " + " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() + self.right.run()
 
 
 class Sub(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " - " + self.right.get_string_interpretation()
 
-    def eval(self):
-        return self.left.eval() - self.right.eval()
+    def run(self):
+        return self.left.run() - self.right.run ()
 
 
 class Mul(BinaryOp):
-    def eval(self):
-        return self.left.eval() * self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " * " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() * self.right.run()
 
 
 class Div(BinaryOp):
-    def eval(self):
-        return self.left.eval() / self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " / " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() / self.right.run()
 
 
 class Less(BinaryOp):
-    def eval(self):
-        return self.left.eval() < self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " < " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() < self.right.run()
 
 
 class More(BinaryOp):
-    def eval(self):
-        return self.left.eval() > self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " > " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() > self.right.run()
 
 
 class EquallyEqually(BinaryOp):
-    def eval(self):
-        return self.left.eval() == self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " == " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() == self.right.run()
 
 
 class NotEqually(BinaryOp):
-    def eval(self):
-        return self.left.eval() == self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " != " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run () == self.right.run ()
 
 
 class MoreEquall(BinaryOp):
-    def eval(self):
-        return self.left.eval() >= self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " >= " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() >= self.right.run()
 
 
 class LessEquall(BinaryOp):
-    def eval(self):
-        return self.left.eval() <= self.right.eval()
+    def get_string_interpretation(self) -> str:
+        return self.left.get_string_interpretation() + " <= " + self.right.get_string_interpretation()
+
+    def run(self):
+        return self.left.run() <= self.right.run()
 
 
 class Print():
@@ -80,20 +110,24 @@ class Print():
     def get_string_interpretation(self) -> str:
         return "print(" + self.value.get_string_interpretation() + ")"
 
-    def eval(self):
-        print(self.value.eval())
+    def run(self):
+        print(self.value.run())
+
 
 class IfStatement():
+    def get_string_interpretation(self) -> str:
+        return "if (" + self.condition.get_string_interpretation() + "):\n\t" + str(self.true_statement.get_string_interpretation())
+
     def __init__(self, condition, true_statement) -> None:
         self.condition = condition
         self.true_statement = true_statement
 
-    def eval(self):
+    def run(self):
         if self.condition:
-            return self.true_statement.eval()
+            return self.true_statement.run()
 
 
-class Statements():
+class Program():
     def __init__(self, statements) -> None:
         self.statements = statements
 
@@ -107,7 +141,20 @@ class Statements():
     def get_string_interpretation(self):
         pass
 
-    def eval(self):
-        print(f"  Evauate all statements: {self.statements}")
+    def run(self):
+        # print(f"  Evauate all statements: {self.statements}")
         for statement in self.statements:
-            statement.eval()
+            statement.run()
+
+
+class Identifier():
+    def __init__(self, type, name, value) -> None:
+        self.type = type
+        self.name = name
+        self.value = value
+
+    def get_string_interpretation(self) -> str:
+        return self.type + ' ' + self.name + ' = ' + str(self.value.run())
+
+    def run(self):
+        return self.value.run()
