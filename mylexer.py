@@ -7,7 +7,7 @@ class Lexer():
 
     def _add_tokens(self):
         # Числа
-        self.lexer.add('FLOAT_NUMBER', r'[+-]?[0-9]+\.[0-9]+')
+        self.lexer.add('FLOAT_NUMBER', r'[-]?[0-9]+\.[0-9]+')
         self.lexer.add('NUMBER', r'\d+')
         # булевые переменные
         # self.lexer.add('BOOLEAN', r'true(?!\w)|false(?!\w)')
@@ -18,6 +18,8 @@ class Lexer():
         self.lexer.add('UNSIGNED_INTEGER',  r'целое')
         # Print
         self.lexer.add('PRINT', r'вывести')
+        #ввести
+        self.lexer.add('INPUT', r'считать')
         # Скобки
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')

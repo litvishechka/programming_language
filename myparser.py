@@ -15,7 +15,7 @@ class Parser():
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER',
              'UNSIGNED_INTEGER', 'FLOAT', 'EQUALLY_EQUALLY', 'NOT_EQUAL', 'MORE_EQUAL',
              'LESS_EQUAL', 'MORE', 'LESS', 'OPEN_CURLY_STAPLE', 'CLOSE_CURLY_STAPLE',
-             'IF'],
+             'IF', 'INPUT'],
 
             precedence=[
                 # ('left',['NUMBER']),
@@ -44,20 +44,35 @@ class Parser():
             # print(f" -- We inside of parser: {p}")
             # print(f"      len of p: {len(p)}")
             # print(f"      len of statements: {len(p[0].statements)}")
-            statements: CodeBlock = p[0]
+            code_block: CodeBlock = p[0]
             statement = p[1]
-            statements.add_statement(statement)
-            return statements
+            code_block.add_statement(statement)
+            return code_block
 
         @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
-        def statement(p):
+        def print_statement(p):
             return Print(p[2])
 
-        @self.pg.production('statement : UNSIGNED_INTEGER IDENTIFIER EQUALLY NUMBER SEMI_COLON')
-        def number(p):
-            variables_dict[p[1].value] = UsingIdentifier(
-                p[0].value, p[1].value, IntNumber(p[3].value))
-            return InitializingIdentifier(p[0].value, p[1].value, IntNumber(p[3].value))
+        @self.pg.production('statement : UNSIGNED_INTEGER IDENTIFIER EQUALLY expression SEMI_COLON')
+        def initial_statement(p):
+            return InitializingIdentifier(p[0].value, p[1].value, p[3])
+
+        @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY expression SEMI_COLON')
+        def initial_statement(p):
+            return InitializingIdentifier(p[0].value, p[1].value, p[3])
+        
+        @self.pg.production('statement : IDENTIFIER EQUALLY expression SEMI_COLON')
+        def reinitial_statement(p): 
+            # print(f" --- --- Reini {p[2]}")
+            return ReinitializingIdentifier(p[0].value, p[2])
+        
+        # @self.pg.production('statement : INPUT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
+        # def inut_statement(p):
+        #     return Input()
+        
+        # @self.pg.production('statement : IDENTIFIER EQUALLY expression SEMI_COLON')
+        # def input_statement(p):
+        #     return ReInput(p[0].value, p[4])
 
         @self.pg.production('statement : IF OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE code_block CLOSE_CURLY_STAPLE SEMI_COLON')
         def if_statement(p):
@@ -65,19 +80,13 @@ class Parser():
             true_statement = p[5]
             return IfStatement(condition, true_statement)
 
-        @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY FLOAT_NUMBER SEMI_COLON')
-        def number(p):
-            variables_dict[p[1].value] = UsingIdentifier(
-                p[0].value, p[1].value, FloatNumber(p[3].value))
-            return InitializingIdentifier(p[0].value, p[1].value, FloatNumber(p[3].value))
-
         @self.pg.production('bool_expression : expression LESS expression')
         @self.pg.production('bool_expression : expression MORE expression')
         @self.pg.production('bool_expression : expression EQUALLY_EQUALLY expression')
         @self.pg.production('bool_expression : expression NOT_EQUAL expression')
         @self.pg.production('bool_expression : expression MORE_EQUAL expression')
         @self.pg.production('bool_expression : expression LESS_EQUAL expression')
-        def condition(p):
+        def bool_expression(p):
             left = p[0]
             right = p[2]
             logical_operator = p[1]
@@ -93,6 +102,10 @@ class Parser():
                 return MoreEquall(left, right)
             elif logical_operator.gettokentype() == 'LESS_EQUAL':
                 return LessEquall(left, right)
+
+        @self.pg.production('statement : INPUT OPEN_PAREN IDENTIFIER CLOSE_PAREN SEMI_COLON')
+        def input_expression(p):
+            return Input(p[2].value)
 
         @self.pg.production('expression : expression SUM expression')
         @self.pg.production('expression : expression SUB expression')
@@ -114,14 +127,14 @@ class Parser():
         @self.pg.production('expression : NUMBER')
         @self.pg.production('expression : FLOAT_NUMBER')
         @self.pg.production('expression : IDENTIFIER')
-        def number(p):
+        def number_expression(p):
             num = p[0]
             if num.gettokentype() == 'NUMBER':
                 return IntNumber(p[0].value)
             elif num.gettokentype() == 'FLOAT_NUMBER':
                 return FloatNumber(p[0].value)
             elif num.gettokentype() == 'IDENTIFIER':
-                return variables_dict.get(p[0].value)
+                return UsingIdentifier(p[0].value)
 
         @self.pg.error
         def error_handle(token):
