@@ -2,16 +2,19 @@ class Number():
     def get_string_interpretation(self) -> str:
         return str(self.value)
 
-    def __init__(self, value):
-        self.value = value
-
 
 class IntNumber(Number):
+    def __init__(self, value: int):
+        self.value = value
+
     def run(self, variables_dict):
         return int(self.value)
 
 
 class FloatNumber(Number):
+    def __init__(self, value: float):
+        self.value = value
+
     def run(self, variables_dict):
         return float(self.value)
 
@@ -190,8 +193,11 @@ class InitializingIdentifier():
         return f"{self.name} = {self.value.get_string_interpretation()}"
 
     def run(self, variables_dict):
-        variables_dict[self.name] = self.value
-        return self.value.run(variables_dict)
+        value = self.value.run(variables_dict)
+        if isinstance(value, int):
+            variables_dict[self.name] = IntNumber(value)
+        elif isinstance(value, float):
+            variables_dict[self.name] = FloatNumber(value)
 
 
 class ReinitializingIdentifier():
@@ -205,8 +211,11 @@ class ReinitializingIdentifier():
         return f"{self.name} = {self.value.get_string_interpretation()}"
 
     def run(self, variables_dict):
-        variables_dict[self.name] = self.value
-        return self.value.run(variables_dict)
+        value = self.value.run(variables_dict)
+        if isinstance(value, int):
+            variables_dict[self.name] = IntNumber(value)
+        elif isinstance(value, float):
+            variables_dict[self.name] = FloatNumber(value)
 
 
 class UsingIdentifier():
@@ -217,7 +226,6 @@ class UsingIdentifier():
         return self.name
 
     def run(self, variables_dict):
-        # return variables_dict[self.name]
         return variables_dict[self.name].run(variables_dict)
 
 
@@ -256,6 +264,6 @@ class Round():
     def get_string_interpretation(self) -> str:
         return 'round(' + self.value + ')'
 
-    def run(self, value):
+    def run(self, variables_dict):
         round_value = round(float(self.value))
-        return (round_value)
+        return round_value

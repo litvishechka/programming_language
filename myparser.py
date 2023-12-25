@@ -103,7 +103,7 @@ class Parser():
         @self.pg.production('statement : INPUT OPEN_PAREN IDENTIFIER CLOSE_PAREN SEMI_COLON')
         def input_expression(p):
             return Input(p[2].value)
-        
+
         @self.pg.production('expression : ROUND OPEN_PAREN FLOAT_NUMBER CLOSE_PAREN')
         def input_expression(p):
             return Round(p[2].value)

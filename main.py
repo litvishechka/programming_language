@@ -13,10 +13,6 @@ pg.create_productions()
 parser = pg.get_parser()
 res = parser.parse(tokens)
 print(f"Result of parser.parse = {res}")
-# first_statement_interpretation = res.statements[0].get_string_interpretation()
-# print(f"First statement string interpretation: {first_statement_interpretation}")
 res.run()
 with  open("output.py", "w", encoding='utf-8') as f:
     f.write(res.get_string_interpretation())
-
-# f.write(res.get_string_interpretation())
