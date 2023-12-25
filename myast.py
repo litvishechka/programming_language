@@ -125,9 +125,9 @@ class Input():
         input_value = input()
         point = '.'
         if point in input_value:
-           variables_dict[self.name] = FloatNumber(float(input_value))
-        else: 
-            variables_dict[self.name] = IntNumber(int(input_value))                                           
+            variables_dict[self.name] = FloatNumber(float(input_value))
+        else:
+            variables_dict[self.name] = IntNumber(int(input_value))
         return variables_dict[self.name]
 
 
@@ -138,7 +138,8 @@ class IfStatement():
 
     def get_string_interpretation(self) -> str:
         condition = f"if ({self.condition.get_string_interpretation()}):\n\t"
-        if_true = '\n\t'.join(self.true_statement.get_string_interpretation().split('\n'))
+        if_true = '\n\t'.join(
+            self.true_statement.get_string_interpretation().split('\n'))
         return condition + if_true
 
     def run(self, variables_dict):
@@ -230,7 +231,7 @@ class Program():
 
     def get_string_interpretation(self):
         return self.code_block.get_string_interpretation()
-    
+
 
 class WhileStatement():
     def __init__(self, condition, statement) -> None:
@@ -239,10 +240,22 @@ class WhileStatement():
 
     def get_string_interpretation(self) -> str:
         condition = f"while ({self.condition.get_string_interpretation()}):\n\t"
-        while_true = '\n\t'.join(self.statement.get_string_interpretation().split('\n'))
+        while_true = '\n\t'.join(
+            self.statement.get_string_interpretation().split('\n'))
         return condition + while_true
 
     def run(self, variables_dict):
         while self.condition.run(variables_dict):
             self.statement.run(variables_dict)
-        # return self.condition.run(variables_dict)
+
+
+class Round():
+    def __init__(self, value):
+        self.value = value
+
+    def get_string_interpretation(self) -> str:
+        return 'round(' + self.value + ')'
+
+    def run(self, value):
+        round_value = round(float(self.value))
+        return (round_value)

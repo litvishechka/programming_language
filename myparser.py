@@ -15,7 +15,7 @@ class Parser():
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER',
              'UNSIGNED_INTEGER', 'FLOAT', 'EQUALLY_EQUALLY', 'NOT_EQUAL', 'MORE_EQUAL',
              'LESS_EQUAL', 'MORE', 'LESS', 'OPEN_CURLY_STAPLE', 'CLOSE_CURLY_STAPLE',
-             'IF', 'INPUT', 'WHILE'],
+             'IF', 'INPUT', 'WHILE', 'ROUND'],
 
             precedence=[
                 # ('left',['NUMBER']),
@@ -103,6 +103,10 @@ class Parser():
         @self.pg.production('statement : INPUT OPEN_PAREN IDENTIFIER CLOSE_PAREN SEMI_COLON')
         def input_expression(p):
             return Input(p[2].value)
+        
+        @self.pg.production('expression : ROUND OPEN_PAREN FLOAT_NUMBER CLOSE_PAREN')
+        def input_expression(p):
+            return Round(p[2].value)
 
         @self.pg.production('expression : expression SUM expression')
         @self.pg.production('expression : expression SUB expression')
