@@ -13,6 +13,10 @@ class Lexer():
         # self.lexer.add('BOOLEAN', r'true(?!\w)|false(?!\w)')
         # условие
         self.lexer.add('IF', r'если')
+        #цикл
+        self.lexer.add('WHILE', r'пока')
+        #округлить
+        self.lexer.add('ROUND', r'округлить')
         # Тип числа
         self.lexer.add('FLOAT',  r'вещественное')
         self.lexer.add('UNSIGNED_INTEGER',  r'целое')

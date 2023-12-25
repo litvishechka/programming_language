@@ -15,13 +15,13 @@ class Parser():
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER',
              'UNSIGNED_INTEGER', 'FLOAT', 'EQUALLY_EQUALLY', 'NOT_EQUAL', 'MORE_EQUAL',
              'LESS_EQUAL', 'MORE', 'LESS', 'OPEN_CURLY_STAPLE', 'CLOSE_CURLY_STAPLE',
-             'IF', 'INPUT'],
+             'IF', 'INPUT', 'WHILE'],
 
             precedence=[
                 # ('left',['NUMBER']),
                 ('left', ['UNSIGNED_INTEGER', 'FLOAT']),
                 ('left', ['=']),
-                ('left', ['IF']),
+                ('left', ['IF', 'WHILE']),
                 ('left', ['EQUALLY_EQUALLY', 'NOT_EQUAL',
                  'MORE_EQUAL', 'MORE', 'LESS', 'LESS_EQUAL']),
                 ('left', ['PLUS', 'MINUS']),
@@ -60,19 +60,16 @@ class Parser():
         @self.pg.production('statement : FLOAT IDENTIFIER EQUALLY expression SEMI_COLON')
         def initial_statement(p):
             return InitializingIdentifier(p[0].value, p[1].value, p[3])
-        
+
         @self.pg.production('statement : IDENTIFIER EQUALLY expression SEMI_COLON')
-        def reinitial_statement(p): 
-            # print(f" --- --- Reini {p[2]}")
+        def reinitial_statement(p):
             return ReinitializingIdentifier(p[0].value, p[2])
-        
-        # @self.pg.production('statement : INPUT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
-        # def inut_statement(p):
-        #     return Input()
-        
-        # @self.pg.production('statement : IDENTIFIER EQUALLY expression SEMI_COLON')
-        # def input_statement(p):
-        #     return ReInput(p[0].value, p[4])
+
+        @self.pg.production('statement : WHILE OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE code_block CLOSE_CURLY_STAPLE SEMI_COLON')
+        def while_statement(p):
+            condition = p[2]
+            statement = p[5]
+            return WhileStatement(condition, statement)
 
         @self.pg.production('statement : IF OPEN_PAREN bool_expression CLOSE_PAREN OPEN_CURLY_STAPLE code_block CLOSE_CURLY_STAPLE SEMI_COLON')
         def if_statement(p):

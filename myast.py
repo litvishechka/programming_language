@@ -115,17 +115,11 @@ class Print():
 
 
 class Input():
-    # def __init__(self):
-    #     self
-
     def __init__(self, name):
         self.name = name
 
     def get_string_interpretation(self) -> str:
         return self.name + " = float(input())"
-
-    # def run(self, variables_dict): 
-    #     return input()
 
     def run(self, variables_dict):
         input_value = input()
@@ -149,7 +143,7 @@ class IfStatement():
 
     def run(self, variables_dict):
         if self.condition.run(variables_dict):
-            return self.true_statement.run(variables_dict)
+            self.true_statement.run(variables_dict)
 
 
 class CodeBlock():
@@ -222,6 +216,7 @@ class UsingIdentifier():
         return self.name
 
     def run(self, variables_dict):
+        # return variables_dict[self.name]
         return variables_dict[self.name].run(variables_dict)
 
 
@@ -235,3 +230,19 @@ class Program():
 
     def get_string_interpretation(self):
         return self.code_block.get_string_interpretation()
+    
+
+class WhileStatement():
+    def __init__(self, condition, statement) -> None:
+        self.condition = condition
+        self.statement = statement
+
+    def get_string_interpretation(self) -> str:
+        condition = f"while ({self.condition.get_string_interpretation()}):\n\t"
+        while_true = '\n\t'.join(self.statement.get_string_interpretation().split('\n'))
+        return condition + while_true
+
+    def run(self, variables_dict):
+        while self.condition.run(variables_dict):
+            self.statement.run(variables_dict)
+        # return self.condition.run(variables_dict)
