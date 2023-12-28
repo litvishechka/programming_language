@@ -91,7 +91,7 @@ class NotEqually(BinaryOp):
         return self.left.get_string_interpretation() + " != " + self.right.get_string_interpretation()
 
     def run(self, variables_dict, function_dict):
-        return self.left.run(variables_dict, function_dict) == self.right.run(variables_dict, function_dict)
+        return self.left.run(variables_dict, function_dict) != self.right.run(variables_dict, function_dict)
 
 
 class MoreEquall(BinaryOp):
@@ -132,19 +132,19 @@ class Input():
         if not self.name in variables_dict.keys():
             sys.tracebacklimit = -1
             raise exceptions.VariableNotFoundError(self.name)
-        
+
         input_value = input()
         point = '.'
         if point in input_value:
             if isinstance(variables_dict[self.name], IntNumber):
-                sys.tracebacklimit = -1 
+                sys.tracebacklimit = -1
                 raise exceptions.VariableNotFloatError(self.name)
             else:
                 variables_dict[self.name] = FloatNumber(float(input_value))
         else:
             if '-' in input_value:
-                sys.tracebacklimit = -1 
-                raise exceptions.VariableNotPositiveError(self.name)
+                sys.tracebacklimit = -1
+                raise exceptions.NotPositiveValueError(self.name)
             else:
                 variables_dict[self.name] = IntNumber(int(input_value))
         return variables_dict[self.name]
@@ -258,11 +258,11 @@ class InitializingIdentifier():
         value = self.value.run(variables_dict, function_dict)
         if self.type == "целое" and value < 0:
             sys.tracebacklimit = -1
-            raise exceptions.VariableNotPositiveError(self.name)
-        elif self.type == "целое" and  isinstance(value, float):
-            sys.tracebacklimit = -1 
+            raise exceptions.Not(self.name)
+        elif self.type == "целое" and isinstance(value, float):
+            sys.tracebacklimit = -1
             raise exceptions.VariableNotFloatError(self.name)
-        
+
         if isinstance(value, int):
             variables_dict[self.name] = IntNumber(value)
         elif isinstance(value, float):
@@ -282,12 +282,17 @@ class ReinitializingIdentifier():
         if not self.name in variables_dict.keys():
             sys.tracebacklimit = -1
             raise exceptions.VariableNotFoundError(self.name)
+
+        old_value = variables_dict[self.name].run(variables_dict, function_dict)
+        new_value = self.value.run(variables_dict, function_dict)
+
+        if type(old_value) == int and type(new_value) == float:
+            raise exceptions.VariableNotFloatError(self.name)
         
-        value = self.value.run(variables_dict, function_dict)
-        if isinstance(value, int):
-            variables_dict[self.name] = IntNumber(value)
-        elif isinstance(value, float):
-            variables_dict[self.name] = FloatNumber(value)
+        if isinstance(new_value, int):
+            variables_dict[self.name] = IntNumber(new_value)
+        elif isinstance(new_value, float):
+            variables_dict[self.name] = FloatNumber(new_value)
 
 
 class UsingIdentifier():
@@ -301,7 +306,7 @@ class UsingIdentifier():
         if not self.name in variables_dict.keys():
             sys.tracebacklimit = -1
             raise exceptions.VariableNotFoundError(self.name)
-        
+
         return variables_dict[self.name].run(variables_dict, function_dict)
 
 

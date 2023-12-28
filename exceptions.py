@@ -26,7 +26,7 @@ class VariableNotFoundError(Exception):
         return f"\n\tVariable \"{self.variable_name}\" was not declared in the program."
     
 
-class VariableNotPositiveError(Exception):
+class NotPositiveValueError(Exception):
     def __init__(self, variable_name) -> None:
         self.variable_name = variable_name
 
@@ -39,5 +39,5 @@ class VariableNotFloatError(Exception):
         self.variable_name = variable_name
 
     def __str__(self) -> str:
-        return f"\n\tThe variable \"{self.variable_name}\" must not contain a point."
+        return f"\n\tThe variable \"{self.variable_name}\" must be a positive integer."
 
