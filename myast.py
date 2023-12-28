@@ -212,7 +212,7 @@ class CallFunction():
         self.name = name
 
     def get_string_interpretation(self):
-        def_name = self.name + "()\n"
+        def_name = self.name + "()"
         return def_name
 
     def run(self, variables_dict, function_dict):
@@ -322,7 +322,7 @@ class WhileStatement():
         return condition + while_true
 
     def run(self, variables_dict, function_dict):
-        while self.condition.run(variables_dict):
+        while self.condition.run(variables_dict, function_dict):
             self.statement.run(variables_dict, function_dict)
 
 
