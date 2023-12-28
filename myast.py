@@ -1,3 +1,7 @@
+import sys
+import exceptions
+
+
 class Number():
     def get_string_interpretation(self) -> str:
         return str(self.value)
@@ -7,7 +11,7 @@ class IntNumber(Number):
     def __init__(self, value: int):
         self.value = value
 
-    def run(self, variables_dict):
+    def run(self, variables_dict, function_dict):
         return int(self.value)
 
 
@@ -15,7 +19,7 @@ class FloatNumber(Number):
     def __init__(self, value: float):
         self.value = value
 
-    def run(self, variables_dict):
+    def run(self, variables_dict, function_dict):
         return float(self.value)
 
 
@@ -30,80 +34,80 @@ class Sum(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " + " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) + self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) + self.right.run(variables_dict, function_dict)
 
 
 class Sub(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " - " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) - self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) - self.right.run(variables_dict, function_dict)
 
 
 class Mul(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " * " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) * self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) * self.right.run(variables_dict, function_dict)
 
 
 class Div(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " / " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) / self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) / self.right.run(variables_dict, function_dict)
 
 
 class Less(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " < " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) < self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) < self.right.run(variables_dict, function_dict)
 
 
 class More(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " > " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) > self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) > self.right.run(variables_dict, function_dict)
 
 
 class EquallyEqually(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " == " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) == self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) == self.right.run(variables_dict, function_dict)
 
 
 class NotEqually(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " != " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) == self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) == self.right.run(variables_dict, function_dict)
 
 
 class MoreEquall(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " >= " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) >= self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) >= self.right.run(variables_dict, function_dict)
 
 
 class LessEquall(BinaryOp):
     def get_string_interpretation(self) -> str:
         return self.left.get_string_interpretation() + " <= " + self.right.get_string_interpretation()
 
-    def run(self, variables_dict):
-        return self.left.run(variables_dict) <= self.right.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        return self.left.run(variables_dict, function_dict) <= self.right.run(variables_dict, function_dict)
 
 
 class Print():
@@ -113,8 +117,8 @@ class Print():
     def get_string_interpretation(self) -> str:
         return "print(" + self.value.get_string_interpretation() + ")"
 
-    def run(self, variables_dict):
-        print(self.value.run(variables_dict))
+    def run(self, variables_dict, function_dict):
+        print(self.value.run(variables_dict, function_dict))
 
 
 class Input():
@@ -124,13 +128,25 @@ class Input():
     def get_string_interpretation(self) -> str:
         return self.name + " = float(input())"
 
-    def run(self, variables_dict):
+    def run(self, variables_dict, function_dict):
+        if not self.name in variables_dict.keys():
+            sys.tracebacklimit = -1
+            raise exceptions.VariableNotFoundError(self.name)
+        
         input_value = input()
         point = '.'
         if point in input_value:
-            variables_dict[self.name] = FloatNumber(float(input_value))
+            if isinstance(variables_dict[self.name], IntNumber):
+                sys.tracebacklimit = -1 
+                raise exceptions.VariableNotFloatError(self.name)
+            else:
+                variables_dict[self.name] = FloatNumber(float(input_value))
         else:
-            variables_dict[self.name] = IntNumber(int(input_value))
+            if '-' in input_value:
+                sys.tracebacklimit = -1 
+                raise exceptions.VariableNotPositiveError(self.name)
+            else:
+                variables_dict[self.name] = IntNumber(int(input_value))
         return variables_dict[self.name]
 
 
@@ -145,9 +161,9 @@ class IfStatement():
             self.true_statement.get_string_interpretation().split('\n'))
         return condition + if_true
 
-    def run(self, variables_dict):
-        if self.condition.run(variables_dict):
-            self.true_statement.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        if self.condition.run(variables_dict, function_dict):
+            self.true_statement.run(variables_dict, function_dict)
 
 
 class CodeBlock():
@@ -167,20 +183,66 @@ class CodeBlock():
             list_statements.append(statement.get_string_interpretation())
         return '\n'.join(list_statements)
 
-    def run(self, variables_dict):
+    def run(self, variables_dict, function_dict):
         for statement in self.statements:
-            statement.run(variables_dict)
+            statement.run(variables_dict, function_dict)
+
+
+class Function():
+    def __init__(self, name, code_block: CodeBlock, return_statement) -> None:
+        self.name = name
+        self.code_block = code_block
+        self.return_statement = return_statement
+
+    def get_string_interpretation(self):
+        def_name = "def " + self.name + "():\n\t"
+        code_block = self.code_block.get_string_interpretation()
+        return_string = "\n\treturn " + self.return_statement.get_string_interpretation()
+
+        return def_name + '\n\t'.join(code_block.split('\n')) + return_string
+
+    def run(self, function_dict):
+        variables_dict = {}
+        self.code_block.run(variables_dict, function_dict)
+        return self.return_statement.run(variables_dict, function_dict)
+
+
+class CallFunction():
+    def __init__(self, name):
+        self.name = name
+
+    def get_string_interpretation(self):
+        def_name = self.name + "()\n"
+        return def_name
+
+    def run(self, variables_dict, function_dict):
+        if not self.name in function_dict.keys():
+            sys.tracebacklimit = 0
+            raise exceptions.FunctionNotFoundError(self.name)
+
+        return function_dict[self.name].run(function_dict)
 
 
 class Program():
-    def __init__(self, code_block) -> None:
-        self.code_block = code_block
+    def __init__(self, functions: dict[str, Function]) -> None:
+        self.functions: dict[str, Function] = functions
+
+    def add_function(self, function: Function):
+        self.functions[function.name] = function
 
     def get_string_interpretation(self):
-        return self.code_block.get_string_interpretation()
+        res = []
 
-    def run(self, variables_dict):
-        self.code_block.run(variables_dict)
+        for function in self.functions.values():
+            res.append(function.get_string_interpretation())
+
+        return '\n\n'.join(res) + "\n\nглавная()"
+
+    def run(self):
+        # print(f"\n -- - Run program. Functions: {self.functions}")
+        main_function = self.functions['главная']
+        # print(f"\n -- - Run program. Main_function: {main_function}")
+        return main_function.run(self.functions)
 
 
 class InitializingIdentifier():
@@ -192,8 +254,15 @@ class InitializingIdentifier():
     def get_string_interpretation(self) -> str:
         return f"{self.name} = {self.value.get_string_interpretation()}"
 
-    def run(self, variables_dict):
-        value = self.value.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        value = self.value.run(variables_dict, function_dict)
+        if self.type == "целое" and value < 0:
+            sys.tracebacklimit = -1
+            raise exceptions.VariableNotPositiveError(self.name)
+        elif self.type == "целое" and  isinstance(value, float):
+            sys.tracebacklimit = -1 
+            raise exceptions.VariableNotFloatError(self.name)
+        
         if isinstance(value, int):
             variables_dict[self.name] = IntNumber(value)
         elif isinstance(value, float):
@@ -204,14 +273,17 @@ class ReinitializingIdentifier():
     def __init__(self, name, value) -> None:
         self.name = name
         self.value = value
-        print(
-            f" -- -- Reinitialize variable {self.name} with value {self.value}")
+        # print(f" -- -- Reinitialize variable {self.name} with value {self.value}")
 
     def get_string_interpretation(self) -> str:
         return f"{self.name} = {self.value.get_string_interpretation()}"
 
-    def run(self, variables_dict):
-        value = self.value.run(variables_dict)
+    def run(self, variables_dict, function_dict):
+        if not self.name in variables_dict.keys():
+            sys.tracebacklimit = -1
+            raise exceptions.VariableNotFoundError(self.name)
+        
+        value = self.value.run(variables_dict, function_dict)
         if isinstance(value, int):
             variables_dict[self.name] = IntNumber(value)
         elif isinstance(value, float):
@@ -225,20 +297,12 @@ class UsingIdentifier():
     def get_string_interpretation(self) -> str:
         return self.name
 
-    def run(self, variables_dict):
-        return variables_dict[self.name].run(variables_dict)
-
-
-class Program():
-    def __init__(self, code_block) -> None:
-        self.code_block = code_block
-
-    def run(self):
-        variables_dict = {}
-        return self.code_block.run(variables_dict)
-
-    def get_string_interpretation(self):
-        return self.code_block.get_string_interpretation()
+    def run(self, variables_dict, function_dict):
+        if not self.name in variables_dict.keys():
+            sys.tracebacklimit = -1
+            raise exceptions.VariableNotFoundError(self.name)
+        
+        return variables_dict[self.name].run(variables_dict, function_dict)
 
 
 class WhileStatement():
@@ -252,9 +316,9 @@ class WhileStatement():
             self.statement.get_string_interpretation().split('\n'))
         return condition + while_true
 
-    def run(self, variables_dict):
+    def run(self, variables_dict, function_dict):
         while self.condition.run(variables_dict):
-            self.statement.run(variables_dict)
+            self.statement.run(variables_dict, function_dict)
 
 
 class Round():
@@ -264,6 +328,6 @@ class Round():
     def get_string_interpretation(self) -> str:
         return 'round(' + self.value + ')'
 
-    def run(self, variables_dict):
+    def run(self, variables_dict, function_dict):
         round_value = round(float(self.value))
         return round_value

@@ -1,6 +1,7 @@
-from rply import ParserGenerator
+from rply import ParserGenerator, Token
+from rply.token import SourcePosition
 from myast import *
-
+import exceptions
 
 variables_dict = {}
 if_list = []
@@ -15,10 +16,10 @@ class Parser():
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV', 'EQUALLY', 'IDENTIFIER',
              'UNSIGNED_INTEGER', 'FLOAT', 'EQUALLY_EQUALLY', 'NOT_EQUAL', 'MORE_EQUAL',
              'LESS_EQUAL', 'MORE', 'LESS', 'OPEN_CURLY_STAPLE', 'CLOSE_CURLY_STAPLE',
-             'IF', 'INPUT', 'WHILE', 'ROUND'],
+             'IF', 'INPUT', 'WHILE', 'ROUND', 'FUNCTION', 'RETURN'],
 
             precedence=[
-                # ('left',['NUMBER']),
+                ('left', ['FUNCTION']),
                 ('left', ['UNSIGNED_INTEGER', 'FLOAT']),
                 ('left', ['=']),
                 ('left', ['IF', 'WHILE']),
@@ -31,9 +32,21 @@ class Parser():
         )
 
     def create_productions(self):
-        @self.pg.production('program : code_block')
+        @self.pg.production('program : ')
+        def empty_program(p) -> CodeBlock:
+            return Program({})
+
+        @self.pg.production('program : program function')
         def program(p) -> Program:
-            return Program(p[0])
+            # print(f"\n -- Program level: {p}")
+            program_stmt = p[0]
+            program_stmt.add_function(p[1])
+            return program_stmt
+
+        @self.pg.production('function : FUNCTION IDENTIFIER OPEN_PAREN CLOSE_PAREN OPEN_CURLY_STAPLE code_block RETURN expression SEMI_COLON CLOSE_CURLY_STAPLE SEMI_COLON')
+        def function(p) -> Function:
+            # print(f"\n -- Function level: {p}")
+            return Function(p[1].value, p[5], p[7])
 
         @self.pg.production('code_block : ')
         def empty_code_block(p) -> CodeBlock:
@@ -48,6 +61,10 @@ class Parser():
             statement = p[1]
             code_block.add_statement(statement)
             return code_block
+
+        @self.pg.production('statement : INPUT OPEN_PAREN IDENTIFIER CLOSE_PAREN SEMI_COLON')
+        def input_statement(p):
+            return Input(p[2].value)
 
         @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
         def print_statement(p):
@@ -100,9 +117,9 @@ class Parser():
             elif logical_operator.gettokentype() == 'LESS_EQUAL':
                 return LessEquall(left, right)
 
-        @self.pg.production('statement : INPUT OPEN_PAREN IDENTIFIER CLOSE_PAREN SEMI_COLON')
-        def input_expression(p):
-            return Input(p[2].value)
+        @self.pg.production('expression : IDENTIFIER OPEN_PAREN CLOSE_PAREN ')
+        def call_function(p):
+            return CallFunction(p[0].value)
 
         @self.pg.production('expression : ROUND OPEN_PAREN FLOAT_NUMBER CLOSE_PAREN')
         def input_expression(p):
@@ -138,8 +155,15 @@ class Parser():
                 return UsingIdentifier(p[0].value)
 
         @self.pg.error
-        def error_handle(token):
-            raise ValueError(token)
+        def error_handle(token: Token):
+            import sys
+
+            sys.tracebacklimit = -1
+            # print(f" - Error_type: {type(token)}\n - Error value: {token}")
+            source_pos: SourcePosition = token.getsourcepos()
+            raise exceptions.SyntaxError(source_pos.lineno)
+            # error_message = f"Error on line: {source_pos.lineno} symbol: {source_pos.colno}"
+            # raise exceptions.SyntaxError(error_message)
 
     def get_parser(self):
         return self.pg.build()

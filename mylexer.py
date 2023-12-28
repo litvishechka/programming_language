@@ -13,9 +13,9 @@ class Lexer():
         # self.lexer.add('BOOLEAN', r'true(?!\w)|false(?!\w)')
         # условие
         self.lexer.add('IF', r'если')
-        #цикл
+        # цикл
         self.lexer.add('WHILE', r'пока')
-        #округлить
+        # округлить
         self.lexer.add('ROUND', r'округлить')
         # Тип числа
         self.lexer.add('FLOAT',  r'вещественное')
@@ -29,6 +29,9 @@ class Lexer():
         self.lexer.add('CLOSE_PAREN', r'\)')
         # Точка с запятой
         self.lexer.add('SEMI_COLON', r'\;')
+        # Function 
+        self.lexer.add('RETURN', r'вернуть')
+        self.lexer.add('FUNCTION', r'функция')
 
         # Операторы
         self.lexer.add('SUM', r'\+')
