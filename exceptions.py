@@ -1,7 +1,3 @@
-class RichException(Exception):
-    pass
-
-
 class SyntaxError(Exception):
     def __init__(self, lineno):
         self.lineno = lineno

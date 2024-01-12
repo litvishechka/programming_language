@@ -9,8 +9,6 @@ class Lexer():
         # Числа
         self.lexer.add('FLOAT_NUMBER', r'[-]?[0-9]+\.[0-9]+')
         self.lexer.add('NUMBER', r'\d+')
-        # булевые переменные
-        # self.lexer.add('BOOLEAN', r'true(?!\w)|false(?!\w)')
         # условие
         self.lexer.add('IF', r'если')
         # цикл
@@ -22,14 +20,14 @@ class Lexer():
         self.lexer.add('UNSIGNED_INTEGER',  r'целое')
         # Print
         self.lexer.add('PRINT', r'вывести')
-        #ввести
+        # ввести
         self.lexer.add('INPUT', r'считать')
         # Скобки
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')
         # Точка с запятой
         self.lexer.add('SEMI_COLON', r'\;')
-        # Function 
+        # Function
         self.lexer.add('RETURN', r'вернуть')
         self.lexer.add('FUNCTION', r'функция')
 
